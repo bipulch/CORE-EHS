@@ -1,0 +1,86 @@
+CREATE DATABASE CarSalesDB;
+USE CarSalesDB;
+
+-- CarModels table
+CREATE TABLE CarModels (
+    CarModelId INT PRIMARY KEY IDENTITY,
+    Brand NVARCHAR(50) NOT NULL,
+    Class NVARCHAR(50) NOT NULL,
+    ModelName NVARCHAR(100) NOT NULL,
+    ModelCode NVARCHAR(10) NOT NULL,
+    Description NVARCHAR(MAX) NOT NULL,
+    Features NVARCHAR(MAX) NOT NULL,
+    Price DECIMAL(18, 2) NOT NULL,
+    DateOfManufacturing DATETIME NOT NULL,
+    Active BIT NOT NULL,
+    SortOrder INT NOT NULL
+);
+
+-- Sales table
+ALTER TABLE Sales
+ADD AudiCommission DECIMAL(18, 2) DEFAULT 0,
+    JaguarCommission DECIMAL(18, 2) DEFAULT 0,
+    LandRoverCommission DECIMAL(18, 2) DEFAULT 0,
+    RenaultCommission DECIMAL(18, 2) DEFAULT 0;
+
+
+-- SalesmanPreviousYearSales table
+CREATE TABLE SalesmanPreviousYearSales (
+    SalesmanId INT PRIMARY KEY IDENTITY,
+    SalesmanName NVARCHAR(100) NOT NULL,
+    LastYearTotalSaleAmount DECIMAL(18, 2) NOT NULL
+);
+
+
+
+-- Stored procedure to calculate commissions
+CREATE PROCEDURE CalculateCommissions
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Update commissions for Audi
+    UPDATE Sales
+    SET AudiCommission = CASE 
+                            WHEN AudiSales > 0 THEN 
+                                CASE 
+                                    WHEN AudiSales > 5 THEN AudiSales * 0.08
+                                    ELSE AudiSales * 0.06
+                                END
+                            ELSE 0
+                         END;
+
+    -- Update commissions for Jaguar
+    UPDATE Sales
+    SET JaguarCommission = CASE 
+                              WHEN JaguarSales > 0 THEN 
+                                  CASE 
+                                      WHEN JaguarSales > 5 THEN JaguarSales * 0.05
+                                      ELSE JaguarSales * 0.04
+                                  END
+                              ELSE 0
+                           END;
+
+    -- Update commissions for Land Rover
+    UPDATE Sales
+    SET LandRoverCommission = CASE 
+                                  WHEN LandRoverSales > 0 THEN 
+                                      CASE 
+                                          WHEN LandRoverSales > 5 THEN LandRoverSales * 0.06
+                                          ELSE LandRoverSales * 0.04
+                                      END
+                                  ELSE 0
+                               END;
+
+    -- Update commissions for Renault
+    UPDATE Sales
+    SET RenaultCommission = CASE 
+                               WHEN RenaultSales > 0 THEN 
+                                   CASE 
+                                       WHEN RenaultSales > 5 THEN RenaultSales * 0.04
+                                       ELSE RenaultSales * 0.02
+                                   END
+                               ELSE 0
+                            END;
+END;
+

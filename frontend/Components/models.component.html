@@ -1,0 +1,10 @@
+﻿<div>
+    <h1>Car Models</h1>
+    <button (click)="calculateCommissions()">Calculate Commissions</button>
+    <ul>
+        <li *ngFor="let carModel of carModels">
+            {{ carModel.ModelName }} - {{ carModel.Brand }}
+        </li>
+    </ul>
+</div>
+
